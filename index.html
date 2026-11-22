@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YuuSorim Extension Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+  :root { --bg:#ffffff; --navy:#0f1d4a; --muted:#6b7488; --line:#dbeafe; --soft:#eff6ff; --blue:#0a6dc2; }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Plus Jakarta Sans", system-ui, sans-serif; background: var(--bg); color: var(--navy); }
+  a { text-decoration: none; color: inherit; }
+  svg { width: 1.15em; height: 1.15em; flex: none; }
+
+  /* Navbar */
+  nav { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.92); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(15,29,74,.08); }
+  .bar { max-width: 1100px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.25rem; letter-spacing: -.01em; }
+  .logo { width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg,#60a5fa,#f0abfc); display: grid; place-items: center; color: #fff; }
+  .logo svg { width: 24px; height: 24px; }
+  .burger { background: none; border: 0; padding: 8px; cursor: pointer; color: var(--navy); }
+  .burger svg { width: 28px; height: 28px; }
+  .menu { display: none; max-width: 1100px; margin: 0 auto; padding: 0 20px 16px; flex-direction: column; gap: 4px; }
+  .menu.open { display: flex; }
+  .menu a { padding: 12px 14px; border-radius: 12px; font-weight: 600; }
+  .menu a:hover { background: var(--soft); }
+
+  /* Hero */
+  .hero { position: relative; overflow: hidden; padding: 52px 20px 44px; text-align: center; background: linear-gradient(110deg,#c4e9ff 0%,#f4f8ff 48%,#ffd6ea 100%); }
+  .hero::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(15,29,74,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(15,29,74,.07) 1px, transparent 1px); background-size: 46px 46px; -webkit-mask-image: linear-gradient(#000 40%, transparent); mask-image: linear-gradient(#000 40%, transparent); }
+  .hero-in { position: relative; max-width: 640px; margin: 0 auto; }
+  .mascot { display: block; width: min(60%, 260px); height: auto; margin: 0 auto 18px; filter: drop-shadow(0 14px 18px rgba(15,29,74,.18)); }
+  .pill { display: inline-block; padding: 12px 24px; border-radius: 999px; background: #fff; border: 1.5px solid var(--line); color: var(--blue); font-weight: 700; box-shadow: 0 6px 16px rgba(15,29,74,.07); }
+  .hero-logo { display: block; width: 120px; height: 120px; margin: 28px auto 0; border-radius: 30px; object-fit: cover; box-shadow: 0 14px 30px rgba(15,29,74,.2); }
+  .hero h1 { margin-top: 26px; font-size: clamp(2rem, 8.5vw, 3.3rem); font-weight: 800; letter-spacing: -.02em; line-height: 1.12; background: linear-gradient(90deg,#3b9bf0,#a78bda 55%,#ec6fb5); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .members { margin-top: 24px; color: #4a5575; font-size: 1.1rem; font-weight: 500; }
+  .members b { display: block; margin-top: 6px; color: var(--navy); font-size: 1.25rem; font-weight: 700; }
+  .hero .stack { max-width: 520px; margin: 30px auto 0; }
+  .stats { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 640px; margin: 40px auto 0; }
+  .stat { background: rgba(255,255,255,.88); border: 1.5px solid var(--line); border-radius: 28px; padding: 22px 6px; box-shadow: 0 8px 20px rgba(96,165,250,.12); }
+  .stat b { display: block; font-size: clamp(2rem, 9vw, 3rem); font-weight: 800; line-height: 1.1; }
+  .stat span { color: var(--muted); font-size: .95rem; font-weight: 500; }
+
+  /* Cards */
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 0; scroll-margin-top: 60px; }
+  .grid { display: grid; gap: 22px; grid-template-columns: 1fr; }
+  @media (min-width: 700px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  .card { background: #fff; border: 1.5px solid var(--line); border-radius: 36px; padding: 26px; box-shadow: 0 12px 30px rgba(96,165,250,.14); display: flex; flex-direction: column; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .tile { width: 64px; height: 64px; border-radius: 20px; background: #fff; border: 1.5px solid var(--line); box-shadow: 0 6px 14px rgba(15,29,74,.1); display: grid; place-items: center; overflow: hidden; font-weight: 800; font-size: 1.6rem; color: var(--blue); }
+  .tile img { width: 60%; height: 60%; object-fit: contain; }
+  .badge { padding: 12px 20px; border-radius: 999px; background: linear-gradient(90deg,#fb923c,#3b5bf0); color: #fff; font-weight: 700; font-size: .95rem; white-space: nowrap; }
+  .title-row { margin-top: 22px; }
+  .title-row h2 { font-size: 1.75rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; }
+  .status { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 999px; font-weight: 700; background: #ecfdf5; color: #059669; }
+  .status::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #34d399; }
+  .status.off { background: #fef2f2; color: #dc2626; }
+  .status.off::before { background: #f87171; }
+  .by { color: var(--muted); font-weight: 500; margin-top: 4px; }
+  .desc { margin-top: 14px; color: #3d4766; font-size: 1.05rem; line-height: 1.6; flex: 1; }
+  .tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .tag { padding: 8px 16px; border-radius: 999px; background: var(--soft); color: var(--blue); font-weight: 700; font-size: .95rem; }
+  .actions { display: flex; gap: 14px; margin-top: 24px; }
+  .btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 12px; border-radius: 999px; font: inherit; font-weight: 700; font-size: 1.1rem; border: 0; cursor: pointer; }
+  .copy { color: #fff; background: linear-gradient(90deg,#22b8ff,#f472b6); }
+  .src { color: var(--blue); background: var(--soft); }
+  .visit { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 18px; color: var(--muted); font-weight: 600; font-size: 1.05rem; }
+  .btn:hover, .visit:hover { filter: brightness(.95); }
+  :focus-visible { outline: 3px solid #3b82f6; outline-offset: 3px; }
+
+  /* Seksi Support & Request */
+  .sections { max-width: 1100px; margin: 0 auto; padding: 56px 20px 130px; display: grid; gap: 56px; scroll-margin-top: 90px; }
+  @media (min-width: 900px) { .sections { grid-template-columns: 1fr 1fr; align-items: start; } }
+  .panel { border-radius: 44px; padding: 34px 30px; background: linear-gradient(135deg,#e0f0ff 0%,#ffffff 50%,#fde8f3 100%); box-shadow: 0 14px 34px rgba(15,29,74,.1); scroll-margin-top: 90px; }
+  .panel h2 { font-size: clamp(2rem, 8vw, 2.6rem); font-weight: 800; letter-spacing: -.02em; line-height: 1.1; margin-top: 14px; }
+  .panel > p { margin-top: 14px; color: #55607c; font-size: 1.1rem; line-height: 1.6; }
+  .panel .ico { width: 40px; height: 40px; }
+  .center { text-align: center; }
+  .center .ico { display: block; margin: 0 auto; }
+  .big { margin-top: 26px; padding: 18px 34px; border-radius: 999px; border: 0; font: inherit; font-weight: 700; font-size: 1.15rem; cursor: pointer; color: #fff; background: linear-gradient(90deg,#22b8ff,#f472b6); box-shadow: 0 10px 22px rgba(244,114,182,.3); }
+  .full { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 17px; border-radius: 999px; font: inherit; font-weight: 700; font-size: 1.15rem; cursor: pointer; }
+  .full.solid { color: #fff; background: linear-gradient(90deg,#22b8ff,#f472b6); border: 0; box-shadow: 0 10px 22px rgba(34,184,255,.28); }
+  .full.line { color: var(--navy); background: #fff; border: 1.5px solid var(--line); }
+  .stack { display: grid; gap: 14px; margin-top: 26px; }
+  .detail { display: none; margin-top: 26px; }
+  .detail.open { display: block; }
+  .checks { list-style: none; padding: 0; display: grid; gap: 18px; margin-bottom: 26px; }
+  .checks li { display: flex; align-items: center; gap: 16px; font-weight: 600; font-size: 1.15rem; }
+  .checks span { width: 34px; height: 34px; border-radius: 50%; background: #22b8ff; color: #fff; display: grid; place-items: center; flex: none; }
+  .checks svg { width: 18px; height: 18px; }
+  .qris { margin-top: 24px; background: #fff; border-radius: 30px; padding: 18px; text-align: center; box-shadow: 0 8px 22px rgba(15,29,74,.08); }
+  .qris img { width: 100%; height: auto; border-radius: 16px; display: block; }
+  .qris p { margin-top: 12px; color: var(--muted); font-weight: 500; font-size: 1.05rem; }
+  .qris .none { padding: 40px 10px; color: var(--muted); }
+
+  /* Tombol chat melayang */
+  .fab { position: fixed; right: 22px; bottom: 28px; width: 72px; height: 72px; border-radius: 50%; background: #10c785; color: #fff; display: grid; place-items: center; box-shadow: 0 12px 28px rgba(16,199,133,.4); z-index: 30; }
+  .fab svg { width: 34px; height: 34px; }
+  .toast { position: fixed; left: 50%; bottom: 36px; transform: translateX(-50%) translateY(20px); background: var(--navy); color: #fff; padding: 12px 22px; border-radius: 999px; font-weight: 600; opacity: 0; pointer-events: none; transition: .25s; z-index: 40; }
+  .toast.show { opacity: 1; transform: translateX(-50%); }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .toast { transition: none; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="bar">
+    <a class="brand" href="#extensions">
+      <span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/><path d="M19 17v4M17 19h4M5 3v3M3.5 4.5h3"/></svg></span>
+      <span id="siteName"></span>
+    </a>
+    <button class="burger" id="burger" aria-label="Buka menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <div class="menu" id="menu"></div>
+</nav>
+
+<header class="hero">
+  <div class="hero-in">
+    <img class="mascot" id="mascot" alt="" onerror="this.remove()">
+    <span class="pill" id="pill"></span>
+    <img class="hero-logo" id="heroLogo" alt="Logo" onerror="this.remove()">
+    <h1 id="heroTitle"></h1>
+    <p class="members" id="members"></p>
+    <div class="stack">
+      <a class="full solid" href="#extensions">Explore Extensions</a>
+      <button class="full line" id="heroChat">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.7-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg>
+        Chat with Me
+      </button>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="nAll">00</b><span>Extensions</span></div>
+    <div class="stat"><b id="nKomik">00</b><span>Extensions Komik</span></div>
+    <div class="stat"><b id="nNovel">00</b><span>Extensions Novel</span></div>
+  </div>
+</header>
+
+<main id="extensions">
+  <div class="grid" id="list"></div>
+</main>
+
+<div class="sections">
+  <section class="panel" id="support">
+    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+    <h2 id="supportTitle"></h2>
+    <p id="supportText"></p>
+    <button class="big" id="supportBtn" aria-expanded="false">Support Me</button>
+    <div class="detail" id="supportDetail">
+      <ul class="checks" id="supportList"></ul>
+      <button class="full line" id="proofBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.7-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg>
+        Send Transfer Proof
+      </button>
+      <div class="qris" id="qris"></div>
+    </div>
+  </section>
+
+  <section class="panel center" id="request">
+    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#22b8ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l1-.6"/><path d="M3.3 7L12 12l8.7-5M12 22V12M16 19h6M19 16v6"/></svg>
+    <h2>Need an extension?</h2>
+    <p id="requestText"></p>
+    <div class="stack">
+      <button class="full solid" id="requestBtn">Request Extension</button>
+      <button class="full line" id="chatBtn">Chat Directly</button>
+    </div>
+  </section>
+</div>
+
+<a class="fab" id="fab" target="_blank" rel="noopener" aria-label="Hubungi admin">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.7-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg>
+</a>
+<div class="toast" id="toast">URL disalin</div>
+
+<script>
+/* ============================================================
+   UBAH DATA DI SINI SAJA. Bagian bawah tidak perlu disentuh.
+   ============================================================ */
+const CONFIG = {
+  siteName: "YuuSorim Extensions",
+  mascot: "hero.png",                       // gambar karakter paling atas (upload ke GitHub dengan nama ini)
+  pill: "Personal project by YuuSorim",
+  logo: "logo.png",                         // gambar logo clan (upload ke GitHub dengan nama ini)
+  heroTitle: "Ekstensi KonMik khusus member Clan Nyx Azure Family",
+  membersLabel: "Consist of",
+  members: ["Nyx Azure MoonFlower ❀", "Nyx Azure NightFlower ❀"],
+  waNumber: "6287880047536",                 // nomor WhatsApp kamu, awali 62 tanpa + dan tanpa 0
+  requestMessage: "minn Yuu, bikinin ekstensi dong",   // chat otomatis saat tombol Request dipencet
+  chatMessage: "Halo Yuu",                  // chat otomatis untuk tombol Chat Directly & tombol hijau
+  proofMessage: "Halo Yuu, ini bukti transfer dukungan saya",
+  qrisNote: "Scan QR untuk mendukung (khusus DANA)",
+  qrisImage: "qris.png",                    // nama file gambar QRIS kamu (upload ke GitHub di folder yang sama)
+  supportTitle: "Support My Work",
+  supportText: "Extension ini gratis dipakai. Kalau membantu kamu, kamu bisa mendukung supaya tetap dirawat.",
+  supportPoints: [
+    "Mendukung pengembangan extension",
+    "Bisa request website baru",
+    "Membantu maintenance extension"
+  ],
+  requestText: "Website yang kamu cari belum ada? Request extension baru dan aku cek.",
+  menu: [
+    { label: "Extensions", link: "#extensions" },
+    { label: "Support", link: "#support" },
+    { label: "Request Extension", link: "#request" }
+  ],
+  extensions: [
+    {
+      name: "Contoh Extension 1",
+      type: "Komik",                    // isi "Komik" atau "Novel" (dipakai untuk hitungan di atas)
+      author: "YuuSorim",
+      badge: "Official YuuSorim",       // kosongkan "" kalau tidak mau ada label
+      status: "On",                     // "On" atau "Off"
+      description: "Extension resmi YuuSorim untuk sumber contoh.",
+      tags: ["Contoh", "Komik"],
+      icon: "",                         // link gambar logo, kosongkan untuk huruf otomatis
+      url: "https://contoh.com/extension-1.json",      // yang disalin tombol Copy URL
+      source: "https://github.com/username/extension-1", // tombol Source
+      website: "https://contoh.com"                      // tombol Visit Website
+    },
+    {
+      name: "Contoh Extension 2",
+      type: "Novel",
+      author: "YuuSorim",
+      badge: "Official YuuSorim",
+      status: "On",
+      description: "Extension resmi YuuSorim untuk sumber contoh kedua.",
+      tags: ["Novel", "Web Novel"],
+      icon: "",
+      url: "https://contoh.com/extension-2.json",
+      source: "https://github.com/username/extension-2",
+      website: "https://contoh.com"
+    },
+    {
+      name: "Contoh Extension 3",
+      type: "Komik",
+      author: "YuuSorim",
+      badge: "",
+      status: "Off",
+      description: "Extension ini sedang tidak aktif.",
+      tags: ["Anime"],
+      icon: "",
+      url: "https://contoh.com/extension-3.json",
+      source: "https://github.com/username/extension-3",
+      website: "https://contoh.com"
+    }
+  ]
+};
+
+/* ---------------- kode tampilan ---------------- */
+const $ = (id) => document.getElementById(id);
+const esc = (s = "") => String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const ICON_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="3"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+const ICON_OUT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>';
+
+document.title = CONFIG.siteName;
+$("siteName").textContent = CONFIG.siteName;
+const wa = (msg) => "https://wa.me/" + CONFIG.waNumber + "?text=" + encodeURIComponent(msg);
+$("fab").href = wa(CONFIG.chatMessage);
+
+// Hero
+$("mascot").src = CONFIG.mascot;
+$("pill").textContent = CONFIG.pill;
+$("heroLogo").src = CONFIG.logo;
+$("heroTitle").textContent = CONFIG.heroTitle;
+$("members").innerHTML = esc(CONFIG.membersLabel) + CONFIG.members.map((m) => `<b>${esc(m)}</b>`).join("");
+$("heroChat").onclick = () => window.open(wa(CONFIG.chatMessage), "_blank", "noopener");
+const pad = (n) => String(n).padStart(2, "0");
+const countType = (t) => CONFIG.extensions.filter((e) => (e.type || "").toLowerCase() === t).length;
+$("nAll").textContent = pad(CONFIG.extensions.length);
+$("nKomik").textContent = pad(countType("komik"));
+$("nNovel").textContent = pad(countType("novel"));
+
+// Support
+$("supportTitle").textContent = CONFIG.supportTitle;
+$("supportText").textContent = CONFIG.supportText;
+$("requestText").textContent = CONFIG.requestText;
+$("supportList").innerHTML = CONFIG.supportPoints.map((t) =>
+  `<li><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>${esc(t)}</li>`).join("");
+$("qris").innerHTML = `<img src="${esc(CONFIG.qrisImage)}" alt="QRIS" onerror="this.parentNode.innerHTML='<p class=none>Gambar QRIS belum diupload.</p>'"><p>${esc(CONFIG.qrisNote)}</p>`;
+$("supportBtn").onclick = () => {
+  const open = $("supportDetail").classList.toggle("open");
+  $("supportBtn").textContent = open ? "Hide" : "Support Me";
+  $("supportBtn").setAttribute("aria-expanded", open);
+};
+$("proofBtn").onclick = () => window.open(wa(CONFIG.proofMessage), "_blank", "noopener");
+$("requestBtn").onclick = () => window.open(wa(CONFIG.requestMessage), "_blank", "noopener");
+$("chatBtn").onclick = () => window.open(wa(CONFIG.chatMessage), "_blank", "noopener");
+
+$("menu").innerHTML = CONFIG.menu.map((m) =>
+  `<a href="${esc(m.link)}" ${m.link.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}>${esc(m.label)}</a>`).join("");
+$("burger").onclick = () => {
+  const open = $("menu").classList.toggle("open");
+  $("burger").setAttribute("aria-expanded", open);
+};
+$("menu").onclick = () => { $("menu").classList.remove("open"); $("burger").setAttribute("aria-expanded", false); };
+
+$("list").innerHTML = CONFIG.extensions.map((e, i) => `
+  <article class="card">
+    <div class="row">
+      <div class="tile">${e.icon ? `<img src="${esc(e.icon)}" alt="">` : esc(e.name.charAt(0).toUpperCase())}</div>
+      ${e.badge ? `<span class="badge">${esc(e.badge)}</span>` : ""}
+    </div>
+    <div class="row title-row">
+      <h2>${esc(e.name)}</h2>
+      <span class="status ${e.status.toLowerCase() === "on" ? "" : "off"}">${esc(e.status)}</span>
+    </div>
+    <p class="by">by ${esc(e.author)}</p>
+    <p class="desc">${esc(e.description)}</p>
+    <div class="tags">${(e.tags || []).map((t) => `<span class="tag">#${esc(t)}</span>`).join("")}</div>
+    <div class="actions">
+      <button class="btn copy" data-i="${i}">${ICON_COPY} Copy URL</button>
+      <a class="btn src" href="${esc(e.source)}" target="_blank" rel="noopener">Source ${ICON_OUT}</a>
+    </div>
+    <a class="visit" href="${esc(e.website)}" target="_blank" rel="noopener">Visit Website ${ICON_OUT}</a>
+  </article>`).join("");
+
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1800);
+}
+$("list").addEventListener("click", async (ev) => {
+  const b = ev.target.closest(".copy");
+  if (!b) return;
+  const url = CONFIG.extensions[b.dataset.i].url;
+  try { await navigator.clipboard.writeText(url); }
+  catch (_) {
+    const ta = document.createElement("textarea");
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); ta.remove();
+  }
+  toast("URL disalin");
+});
+</script>
+</body>
+</html>
